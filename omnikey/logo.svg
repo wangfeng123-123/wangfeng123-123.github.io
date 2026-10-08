@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="0.55" stop-color="#7c5cf6"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.3" cy="0.25" r="0.8">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#g)"/>
+  <rect width="512" height="512" rx="116" fill="url(#glow)"/>
+  <!-- orbit ring: "omni" -->
+  <circle cx="196" cy="256" r="122" fill="none" stroke="#ffffff" stroke-opacity="0.38" stroke-width="8" stroke-dasharray="34 22" stroke-linecap="round"/>
+  <circle cx="196" cy="134" r="15" fill="#ffffff"/>
+  <circle cx="90" cy="317" r="15" fill="#ffffff" fill-opacity="0.85"/>
+  <circle cx="302" cy="317" r="15" fill="#ffffff" fill-opacity="0.85"/>
+  <!-- key -->
+  <circle cx="196" cy="256" r="58" fill="none" stroke="#ffffff" stroke-width="34"/>
+  <path d="M271 256 H430" fill="none" stroke="#ffffff" stroke-width="34" stroke-linecap="round"/>
+  <path d="M372 256 V306 M424 256 V318" fill="none" stroke="#ffffff" stroke-width="30" stroke-linecap="round"/>
+</svg>
