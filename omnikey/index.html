@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OmniKey AI</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+:root{--color-primary:#6366f1;--color-secondary:#8b5cf6;--color-accent:#06b6d4;--color-success:#10b981;--text-primary:#111827;--text-secondary:#6b7280;--text-xs:12px;--text-sm:14px;--text-base:16px;--text-lg:20px;--text-xl:24px;--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;--space-8:32px;--space-12:48px;--space-16:64px;--radius-full:9999px;--radius-lg:16px;--shadow-card:0 4px 12px rgba(0,0,0,0.08)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:var(--text-base);color:var(--text-primary);background:#f8f9fa;min-height:100vh;overflow-x:hidden}
+.bg-wrap{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.bg-dots{position:absolute;inset:0;background-image:radial-gradient(circle,#c7d2fe 1px,transparent 1px);background-size:28px 28px;opacity:.55}
+.bg-glow-1{position:absolute;width:560px;height:560px;border-radius:50%;top:-160px;right:-120px;background:radial-gradient(circle,rgba(99,102,241,.10) 0%,transparent 70%)}
+.bg-glow-2{position:absolute;width:480px;height:480px;border-radius:50%;bottom:-140px;left:-100px;background:radial-gradient(circle,rgba(6,182,212,.09) 0%,transparent 70%)}
+.container{max-width:960px;margin:0 auto;padding:0 var(--space-6);position:relative;z-index:1}
+.glass-card{background:#fff;border:1px solid #e5e7eb;border-radius:var(--radius-lg);box-shadow:var(--shadow-card)}
+.grad-text{background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 60%,#06b6d4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:var(--space-3) var(--space-6);border-radius:var(--radius-full);border:none;font-size:var(--text-sm);font-weight:600;cursor:pointer;text-decoration:none;transition:transform .18s,box-shadow .18s,background-color .18s}
+.btn-primary{background:var(--color-primary);color:#fff;box-shadow:0 4px 12px rgba(99,102,241,.28)}
+.btn-primary:hover{background:#4f52d9;transform:translateY(-2px);box-shadow:0 6px 16px rgba(99,102,241,.32)}
+.btn-outline{background:#fff;color:var(--color-primary);border:1px solid #d1d5db;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.btn-outline:hover{background:#f3f4f6;transform:translateY(-2px)}
+.hero{padding:var(--space-16) 0 var(--space-8);text-align:center}
+.hero-brand{font-size:clamp(48px,10vw,80px);font-weight:600;line-height:1.1;letter-spacing:-1px}
+.hero-sub-brand{font-size:var(--text-base);font-weight:500;letter-spacing:3px;color:var(--color-primary);margin-top:var(--space-2);text-transform:uppercase;opacity:.85}
+.hero-divider{width:64px;height:2px;background:#e5e7eb;border-radius:var(--radius-full);margin:var(--space-6) auto}
+.hero-heading{font-size:var(--text-lg);font-weight:600;max-width:600px;margin:0 auto var(--space-4);line-height:1.6}
+.hero-highlight{display:inline-block;font-size:var(--text-sm);font-weight:500;padding:var(--space-2) var(--space-4);border-radius:var(--radius-full);background:#eef2ff;border:1px solid #c7d2fe;color:var(--color-primary);margin-bottom:var(--space-8)}
+.api-endpoint-bar{display:inline-flex;align-items:center;margin:0 auto var(--space-6);padding:var(--space-2) var(--space-2) var(--space-2) var(--space-4);background:linear-gradient(135deg,#f8fafc 0%,#f1f5f9 100%);border:1px solid #e2e8f0;border-radius:var(--radius-full);gap:2px;position:relative}
+.api-endpoint-base{font-size:13px;font-weight:600;color:var(--text-primary);white-space:nowrap;flex-shrink:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:-0.3px}
+.api-endpoint-path-wrapper{overflow:hidden;height:20px;position:relative;text-align:left;margin-left:8px}
+.api-endpoint-path-track{display:flex;flex-direction:column;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.api-endpoint-path{font-size:var(--text-xs);font-weight:600;color:var(--color-primary);white-space:nowrap;height:20px;line-height:20px;text-align:left;font-family:'SF Mono','Fira Code',Menlo,Consolas,monospace}
+.api-copy-btn{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;border:1px solid #e2e8f0;background:#fff;cursor:pointer;flex-shrink:0;transition:all .2s;margin-left:4px}
+.api-copy-btn:hover{background:#eef2ff;border-color:#c7d2fe;transform:scale(1.1)}
+.api-copy-btn:active{transform:scale(.95)}
+.api-copy-btn svg{width:13px;height:13px;color:var(--text-secondary);transition:color .2s}
+.api-copy-btn:hover svg{color:var(--color-primary)}
+.api-copy-btn .icon-check{display:none;color:var(--color-success)}
+.api-copy-btn.copied{background:#ecfdf5;border-color:#6ee7b7}
+.api-copy-btn.copied .icon-copy{display:none}
+.api-copy-btn.copied .icon-check{display:block}
+.copy-toast{position:fixed;top:28px;left:50%;transform:translateX(-50%) translateY(-24px);background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:#fff;font-size:var(--text-sm);font-weight:600;padding:var(--space-3) var(--space-6);border-radius:var(--radius-full);box-shadow:0 8px 32px rgba(16,185,129,.35);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s cubic-bezier(.4,0,.2,1);z-index:9999;display:flex;align-items:center;gap:var(--space-2)}
+.copy-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.hero-stats{display:flex;align-items:center;justify-content:center;gap:var(--space-8);margin:0 auto var(--space-8);padding:var(--space-6) var(--space-8);max-width:560px;background:#fff;border:1px solid #e5e7eb;border-radius:var(--radius-lg);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.hero-stat-item{display:flex;flex-direction:column;align-items:center;gap:var(--space-1)}
+.hero-stat-num{font-size:var(--text-xl);font-weight:600;line-height:1;color:var(--color-primary)}
+.hero-stat-label{font-size:var(--text-xs);color:var(--text-secondary);font-weight:500;white-space:nowrap}
+.hero-stat-divider{width:1px;height:32px;background:#e5e7eb;flex-shrink:0}
+.hero-cta{display:flex;gap:var(--space-4);justify-content:center;flex-wrap:wrap;align-items:center}
+.steps-wrap{padding:0 0 var(--space-6);position:relative;z-index:1}
+.steps-grid{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;padding:var(--space-8)}
+.step-item{display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--space-3);padding:0 var(--space-4)}
+.step-header{display:flex;align-items:center;gap:var(--space-2)}
+.step-num{width:28px;height:28px;border-radius:50%;background:#eef2ff;border:1.5px solid #c7d2fe;display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:600;color:var(--color-primary);flex-shrink:0}
+.step-title{font-size:var(--text-base);font-weight:600;color:var(--text-primary)}
+.step-desc{font-size:var(--text-sm);color:var(--text-secondary);line-height:1.6}
+.step-arrow{color:#d1d5db;flex-shrink:0}
+.api-bar-center{display:flex;justify-content:center}
+.btn-support-models{display:inline-flex;align-items:center;gap:8px;padding:var(--space-3) var(--space-4) var(--space-3) var(--space-6);border-radius:var(--radius-full);border:1px solid #d1d5db;background:#fff;color:var(--color-primary);font-size:var(--text-sm);font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:transform .18s,box-shadow .18s,background-color .18s;overflow:hidden;position:relative}
+.btn-support-models:hover{background:#f3f4f6;transform:translateY(-2px)}
+.model-icons-scroll{width:20px;height:20px;overflow:hidden;position:relative;flex-shrink:0}
+.model-icons-track{display:flex;flex-direction:column;will-change:transform}
+.model-icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.model-icon svg,.model-icon img{width:18px;height:18px;display:block;object-fit:contain}
+
+/* ===== 顶部导航（仿原站 new-api 导航栏） ===== */
+.site-nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid #eceef2}
+.site-nav-inner{max-width:1280px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;gap:28px}
+.site-nav-brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:#111827;text-decoration:none}
+.site-nav-brand img{width:26px;height:26px;border-radius:6px}
+.site-nav-links{display:flex;gap:22px}
+.site-nav-links a{font-size:14px;font-weight:600;color:#111827;text-decoration:none}
+.site-nav-links a:hover{color:var(--color-primary)}
+.site-nav-right{margin-left:auto;display:flex;gap:8px}
+.site-nav-right a{font-size:13px;font-weight:600;text-decoration:none;padding:7px 14px;border-radius:9999px}
+.site-nav-right .signin{background:#f3f4f6;color:#111827}
+.site-nav-right .signup{background:var(--color-primary);color:#fff}
+@media(max-width:640px){.site-nav-links{display:none}}
+</style>
+</head>
+<body>
+<header class="site-nav">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand" href="./"><img src="logo.svg" alt="OmniKey AI">OmniKey AI</a>
+    <nav class="site-nav-links">
+      <a href="./">Home</a>
+      <a href="https://omnikey-ai.com/console">Console</a>
+      <a href="https://omnikey-ai.com/pricing">Model Marketplace</a>
+      <a href="https://omnikey-ai.com/about">Documentation</a>
+    </nav>
+    <div class="site-nav-right">
+      <a class="signin" href="https://omnikey-ai.com/login">Sign in</a>
+      <a class="signup" href="https://omnikey-ai.com/register">Sign up</a>
+    </div>
+  </div>
+</header>
+<!-- Google Tag Manager (noscript) -->
+<!-- End Google Tag Manager (noscript) -->
+<div class="bg-wrap" aria-hidden="true"><div class="bg-dots"></div><div class="bg-glow-1"></div><div class="bg-glow-2"></div></div>
+<div class="copy-toast" id="copyToast"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Copied to clipboard!</div>
+
+<section class="hero"><div class="container">
+<h1 class="hero-brand grad-text">OmniKey AI</h1>
+<p class="hero-sub-brand">Better prices, same intelligence</p>
+<div class="hero-divider"></div>
+<p class="hero-heading">Connect to the world's top AI models with one API Key</p>
+<div class="api-bar-center">
+<div class="api-endpoint-bar" id="endpointBar">
+  <span class="api-endpoint-base">https://omnikey-ai.com</span>
+  <div class="api-endpoint-path-wrapper"><div class="api-endpoint-path-track" id="pathTrack">
+    <div class="api-endpoint-path">/v1/chat/completions</div>
+    <div class="api-endpoint-path">/v1/responses</div>
+    <div class="api-endpoint-path">/v1/messages</div>
+    <div class="api-endpoint-path">/v1beta/models</div>
+    <div class="api-endpoint-path">/v1/images/generations</div>
+    <div class="api-endpoint-path">/v1/videos</div>
+    <div class="api-endpoint-path">/v1/audio/speech</div>
+    <div class="api-endpoint-path">/v1/embeddings</div>
+  </div></div>
+  <button class="api-copy-btn" id="copyBtn" title="Copy endpoint URL">
+    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+  </button>
+</div>
+</div>
+<div class="hero-highlight">Unlimited concurrency · Pay-as-you-go · Full model coverage · Rapid updates</div>
+<div class="hero-stats">
+  <div class="hero-stat-item"><span class="hero-stat-num">200+</span><span class="hero-stat-label">AI Models</span></div>
+  <div class="hero-stat-divider"></div>
+  <div class="hero-stat-item"><span class="hero-stat-num">50+%</span><span class="hero-stat-label">Cost Savings</span></div>
+  <div class="hero-stat-divider"></div>
+  <div class="hero-stat-item"><span class="hero-stat-num">∞</span><span class="hero-stat-label">Concurrency</span></div>
+  <div class="hero-stat-divider"></div>
+  <div class="hero-stat-item"><span class="hero-stat-num">24/7</span><span class="hero-stat-label">Support</span></div>
+</div>
+<div class="hero-cta">
+  <a href="https://omnikey-ai.com/login" class="btn btn-primary">Free Trial</a>
+  <a href="https://omnikey-ai.com/about" class="btn btn-outline">Documentation</a>
+  <a href="https://omnikey-ai.com/pricing" class="btn-support-models">
+    Support models
+    <div class="model-icons-scroll">
+      <div class="model-icons-track" id="modelIconsTrack">
+        <div class="model-icon">
+          <svg fill="currentColor" fill-rule="evenodd" height="56" viewBox="0 0 24 24" width="56" xmlns="http://www.w3.org/2000/svg" style="flex:0 0 auto;line-height:1"><title>OpenAI</title><path d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z"></path></svg>
+        </div>
+        <div class="model-icon">
+          <svg height="56" viewBox="0 0 24 24" width="56" xmlns="http://www.w3.org/2000/svg" style="flex:0 0 auto;line-height:1"><title>Claude</title><path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="#D97757" fill-rule="nonzero"></path></svg>
+        </div>
+        <div class="model-icon">
+          <svg height="56" viewBox="0 0 24 24" width="56" xmlns="http://www.w3.org/2000/svg" style="flex:0 0 auto;line-height:1"><title>Gemini</title><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-0-_r_1vk_)"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-1-_r_1vk_)"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-2-_r_1vk_)"></path><defs><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-0-_r_1vk_" x1="7" x2="11" y1="15.5" y2="12"><stop stop-color="#08B962"></stop><stop offset="1" stop-color="#08B962" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-1-_r_1vk_" x1="8" x2="11.5" y1="5.5" y2="11"><stop stop-color="#F94543"></stop><stop offset="1" stop-color="#F94543" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-2-_r_1vk_" x1="3.5" x2="17.5" y1="13.5" y2="12"><stop stop-color="#FABC12"></stop><stop offset=".46" stop-color="#FABC12" stop-opacity="0"></stop></linearGradient></defs></svg>
+        </div>
+        <div class="model-icon">
+          <svg fill="currentColor" fill-rule="evenodd" height="56" viewBox="0 0 24 24" width="56" xmlns="http://www.w3.org/2000/svg" style="flex:0 0 auto;line-height:1"><title>Grok</title><path d="M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.83c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815"></path></svg>
+        </div>
+        <div class="model-icon">
+          <svg height="56" viewBox="0 0 24 24" width="56" xmlns="http://www.w3.org/2000/svg" style="flex:0 0 auto;line-height:1"><title>DeepSeek</title><path d="M23.748 4.482c-.254-.124-.364.113-.512.234-.051.039-.094.09-.137.136-.372.397-.806.657-1.373.626-.829-.046-1.537.214-2.163.848-.133-.782-.575-1.248-1.247-1.548-.352-.156-.708-.311-.955-.65-.172-.241-.219-.51-.305-.774-.055-.16-.11-.323-.293-.35-.2-.031-.278.136-.356.276-.313.572-.434 1.202-.422 1.84.027 1.436.633 2.58 1.838 3.393.137.093.172.187.129.323-.082.28-.18.552-.266.833-.055.179-.137.217-.329.14a5.526 5.526 0 01-1.736-1.18c-.857-.828-1.631-1.742-2.597-2.458a11.365 11.365 0 00-.689-.471c-.985-.957.13-1.743.388-1.836.27-.098.093-.432-.779-.428-.872.004-1.67.295-2.687.684a3.055 3.055 0 01-.465.137 9.597 9.597 0 00-2.883-.102c-1.885.21-3.39 1.102-4.497 2.623C.082 8.606-.231 10.684.152 12.85c.403 2.284 1.569 4.175 3.36 5.653 1.858 1.533 3.997 2.284 6.438 2.14 1.482-.085 3.133-.284 4.994-1.86.47.234.962.327 1.78.397.63.059 1.236-.03 1.705-.128.735-.156.684-.837.419-.961-2.155-1.004-1.682-.595-2.113-.926 1.096-1.296 2.746-2.642 3.392-7.003.05-.347.007-.565 0-.845-.004-.17.035-.237.23-.256a4.173 4.173 0 001.545-.475c1.396-.763 1.96-2.015 2.093-3.517.02-.23-.004-.467-.247-.588zM11.581 18c-2.089-1.642-3.102-2.183-3.52-2.16-.392.024-.321.471-.235.763.09.288.207.486.371.739.114.167.192.416-.113.603-.673.416-1.842-.14-1.897-.167-1.361-.802-2.5-1.86-3.301-3.307-.774-1.393-1.224-2.887-1.298-4.482-.02-.386.093-.522.477-.592a4.696 4.696 0 011.529-.039c2.132.312 3.946 1.265 5.468 2.774.868.86 1.525 1.887 2.202 2.891.72 1.066 1.494 2.082 2.48 2.914.348.292.625.514.891.677-.802.09-2.14.11-3.054-.614zm1-6.44a.306.306 0 01.415-.287.302.302 0 01.2.288.306.306 0 01-.31.307.303.303 0 01-.304-.308zm3.11 1.596c-.2.081-.399.151-.59.16a1.245 1.245 0 01-.798-.254c-.274-.23-.47-.358-.552-.758a1.73 1.73 0 01.016-.588c.07-.327-.008-.537-.239-.727-.187-.156-.426-.199-.688-.199a.559.559 0 01-.254-.078c-.11-.054-.2-.19-.114-.358.028-.054.16-.186.192-.21.356-.202.767-.136 1.146.016.352.144.618.408 1.001.782.391.451.462.576.685.914.176.265.336.537.445.848.067.195-.019.354-.25.452z" fill="#4D6BFE"></path></svg>
+        </div>
+        <div class="model-icon">
+          <svg height="56" viewBox="0 0 24 24" width="56" xmlns="http://www.w3.org/2000/svg" style="flex:0 0 auto;line-height:1"><title>Doubao</title><path d="M5.31 15.756c.172-3.75 1.883-5.999 2.549-6.739-3.26 2.058-5.425 5.658-6.358 8.308v1.12C1.501 21.513 4.226 24 7.59 24a6.59 6.59 0 002.2-.375c.353-.12.7-.248 1.039-.378.913-.899 1.65-1.91 2.243-2.992-4.877 2.431-7.974.072-7.763-4.5l.002.001z" fill="#1E37FC"></path><path d="M22.57 10.283c-1.212-.901-4.109-2.404-7.397-2.8.295 3.792.093 8.766-2.1 12.773a12.782 12.782 0 01-2.244 2.992c3.764-1.448 6.746-3.457 8.596-5.219 2.82-2.683 3.353-5.178 3.361-6.66a2.737 2.737 0 00-.216-1.084v-.002z" fill="#37E1BE"></path><path d="M14.303 1.867C12.955.7 11.248 0 9.39 0 7.532 0 5.883.677 4.545 1.807 2.791 3.29 1.627 5.557 1.5 8.125v9.201c.932-2.65 3.097-6.25 6.357-8.307.5-.318 1.025-.595 1.569-.829 1.883-.801 3.878-.932 5.746-.706-.222-2.83-.718-5.002-.87-5.617h.001z" fill="#A569FF"></path><path d="M17.305 4.961a199.47 199.47 0 01-1.08-1.094c-.202-.213-.398-.419-.586-.622l-1.333-1.378c.151.615.648 2.786.869 5.617 3.288.395 6.185 1.898 7.396 2.8-1.306-1.275-3.475-3.487-5.266-5.323z" fill="#1E37FC"></path></svg>
+        </div>
+        <div class="model-icon">
+          <svg height="56" viewBox="0 0 24 24" width="56" xmlns="http://www.w3.org/2000/svg" style="flex:0 0 auto;line-height:1"><title>Qwen</title><path d="M12.604 1.34c.393.69.784 1.382 1.174 2.075a.18.18 0 00.157.091h5.552c.174 0 .322.11.446.327l1.454 2.57c.19.337.24.478.024.837-.26.43-.513.864-.76 1.3l-.367.658c-.106.196-.223.28-.04.512l2.652 4.637c.172.301.111.494-.043.77-.437.785-.882 1.564-1.335 2.34-.159.272-.352.375-.68.37-.777-.016-1.552-.01-2.327.016a.099.099 0 00-.081.05 575.097 575.097 0 01-2.705 4.74c-.169.293-.38.363-.725.364-.997.003-2.002.004-3.017.002a.537.537 0 01-.465-.271l-1.335-2.323a.09.09 0 00-.083-.049H4.982c-.285.03-.553-.001-.805-.092l-1.603-2.77a.543.543 0 01-.002-.54l1.207-2.12a.198.198 0 000-.197 550.951 550.951 0 01-1.875-3.272l-.79-1.395c-.16-.31-.173-.496.095-.965.465-.813.927-1.625 1.387-2.436.132-.234.304-.334.584-.335a338.3 338.3 0 012.589-.001.124.124 0 00.107-.063l2.806-4.895a.488.488 0 01.422-.246c.524-.001 1.053 0 1.583-.006L11.704 1c.341-.003.724.032.9.34zm-3.432.403a.06.06 0 00-.052.03L6.254 6.788a.157.157 0 01-.135.078H3.253c-.056 0-.07.025-.041.074l5.81 10.156c.025.042.013.062-.034.063l-2.795.015a.218.218 0 00-.2.116l-1.32 2.31c-.044.078-.021.118.068.118l5.716.008c.046 0 .08.02.104.061l1.403 2.454c.046.081.092.082.139 0l5.006-8.76.783-1.382a.055.055 0 01.096 0l1.424 2.53a.122.122 0 00.107.062l2.763-.02a.04.04 0 00.035-.02.041.041 0 000-.04l-2.9-5.086a.108.108 0 010-.113l.293-.507 1.12-1.977c.024-.041.012-.062-.035-.062H9.2c-.059 0-.073-.026-.043-.077l1.434-2.505a.107.107 0 000-.114L9.225 1.774a.06.06 0 00-.053-.031zm6.29 8.02c.046 0 .058.02.034.06l-.832 1.465-2.613 4.585a.056.056 0 01-.05.029.058.058 0 01-.05-.029L8.498 9.841c-.02-.034-.01-.052.028-.054l.216-.012 6.722-.012z" fill="url(#lobe-icons-qwen-_r_200_)" fill-rule="nonzero"></path><defs><linearGradient id="lobe-icons-qwen-_r_200_" x1="0%" x2="100%" y1="0%" y2="0%"><stop offset="0%" stop-color="#6336E7" stop-opacity=".84"></stop><stop offset="100%" stop-color="#6F69F7" stop-opacity=".84"></stop></linearGradient></defs></svg>
+        </div>
+        <div class="model-icon">
+          <svg height="56" viewBox="0 0 24 24" width="56" xmlns="http://www.w3.org/2000/svg" style="flex:0 0 auto;line-height:1"><title>Minimax</title><defs><linearGradient id="lobe-icons-minimax-_r_3g1_" x1="0%" x2="100.182%" y1="50.057%" y2="50.057%"><stop offset="0%" stop-color="#E2167E"></stop><stop offset="100%" stop-color="#FE603C"></stop></linearGradient></defs><path d="M16.278 2c1.156 0 2.093.927 2.093 2.07v12.501a.74.74 0 00.744.709.74.74 0 00.743-.709V9.099a2.06 2.06 0 012.071-2.049A2.06 2.06 0 0124 9.1v6.561a.649.649 0 01-.652.645.649.649 0 01-.653-.645V9.1a.762.762 0 00-.766-.758.762.762 0 00-.766.758v7.472a2.037 2.037 0 01-2.048 2.026 2.037 2.037 0 01-2.048-2.026v-12.5a.785.785 0 00-.788-.753.785.785 0 00-.789.752l-.001 15.904A2.037 2.037 0 0113.441 22a2.037 2.037 0 01-2.048-2.026V18.04c0-.356.292-.645.652-.645.36 0 .652.289.652.645v1.934c0 .263.142.506.372.638.23.131.514.131.744 0a.734.734 0 00.372-.638V4.07c0-1.143.937-2.07 2.093-2.07zm-5.674 0c1.156 0 2.093.927 2.093 2.07v11.523a.648.648 0 01-.652.645.648.648 0 01-.652-.645V4.07a.785.785 0 00-.789-.78.785.785 0 00-.789.78v14.013a2.06 2.06 0 01-2.07 2.048 2.06 2.06 0 01-2.071-2.048V9.1a.762.762 0 00-.766-.758.762.762 0 00-.766.758v3.8a2.06 2.06 0 01-2.071 2.049A2.06 2.06 0 010 12.9v-1.378c0-.357.292-.646.652-.646.36 0 .653.29.653.646V12.9c0 .418.343.757.766.757s.766-.339.766-.757V9.099a2.06 2.06 0 012.07-2.048 2.06 2.06 0 012.071 2.048v8.984c0 .419.343.758.767.758.423 0 .766-.339.766-.758V4.07c0-1.143.937-2.07 2.093-2.07z" fill="url(#lobe-icons-minimax-_r_3g1_)" fill-rule="nonzero"></path></svg>
+        </div>
+        <div class="model-icon">
+          <svg fill="currentColor" fill-rule="evenodd" height="56" viewBox="0 0 24 24" width="56" xmlns="http://www.w3.org/2000/svg" style="flex:0 0 auto;line-height:1"><title>Kimi</title><path d="M21.846 0a1.923 1.923 0 110 3.846H20.15a.226.226 0 01-.227-.226V1.923C19.923.861 20.784 0 21.846 0z"></path><path d="M11.065 11.199l7.257-7.2c.137-.136.06-.41-.116-.41H14.3a.164.164 0 00-.117.051l-7.82 7.756c-.122.12-.302.013-.302-.179V3.82c0-.127-.083-.23-.185-.23H3.186c-.103 0-.186.103-.186.23V19.77c0 .128.083.23.186.23h2.69c.103 0 .186-.102.186-.23v-3.25c0-.069.025-.135.069-.178l2.424-2.406a.158.158 0 01.205-.023l6.484 4.772a7.677 7.677 0 003.453 1.283c.108.012.2-.095.2-.23v-3.06c0-.117-.07-.212-.164-.227a5.028 5.028 0 01-2.027-.807l-5.613-4.064c-.117-.078-.132-.279-.028-.381z"></path></svg>
+        </div>
+        <div class="model-icon" aria-hidden="true">
+          <svg fill="currentColor" fill-rule="evenodd" height="56" viewBox="0 0 24 24" width="56" xmlns="http://www.w3.org/2000/svg" style="flex:0 0 auto;line-height:1"><title>OpenAI</title><path d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z"></path></svg>
+        </div>
+      </div>
+    </div>
+  </a>
+</div>
+</div></section>
+
+<div class="steps-wrap"><div class="container"><div class="glass-card steps-grid">
+<div class="step-item"><div class="step-header"><div class="step-num">1</div><div class="step-title">Sign Up</div></div><div class="step-desc">Create your account with email and log in.</div></div>
+<svg class="step-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+<div class="step-item"><div class="step-header"><div class="step-num">2</div><div class="step-title">Get Your API Key</div></div><div class="step-desc">Generate your key from the dashboard.</div></div>
+<svg class="step-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+<div class="step-item"><div class="step-header"><div class="step-num">3</div><div class="step-title">Free Trial Credits</div></div><div class="step-desc">New user gets <span style="color:#10b981;font-weight:600">$0.1 free credits</span> to try all models.</div></div>
+<svg class="step-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+<div class="step-item"><div class="step-header"><div class="step-num">4</div><div class="step-title">Buy Credits</div></div><div class="step-desc">After your trial, recharge anytime. Never expires.</div></div>
+</div></div></div>
+
+<script>
+(function(){
+  var track=document.getElementById('pathTrack'),
+      paths=track.querySelectorAll('.api-endpoint-path'),
+      total=paths.length,idx=0,h=20;
+  setInterval(function(){
+    idx=(idx+1)%total;
+    track.style.transform='translateY(-'+idx*h+'px)';
+  },2500);
+  var btn=document.getElementById('copyBtn'),
+      toast=document.getElementById('copyToast');
+  btn.addEventListener('click',function(){
+    var url='https://omnikey-ai.com'+paths[idx].textContent;
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(ok).catch(fb);
+    }else{fb();}
+    function fb(){
+      var t=document.createElement('textarea');
+      t.value=url;t.style.position='fixed';t.style.left='-9999px';
+      document.body.appendChild(t);t.select();
+      try{document.execCommand('copy');ok();}
+      catch(e){alert('Copy failed: '+url);}
+      document.body.removeChild(t);
+    }
+    function ok(){
+      btn.classList.add('copied');
+      setTimeout(function(){btn.classList.remove('copied');},2000);
+      toast.classList.add('show');
+      setTimeout(function(){toast.classList.remove('show');},2200);
+    }
+  });
+})();
+
+(function(){
+  var track=document.getElementById('modelIconsTrack');
+  var ICON_H=20;
+  var TOTAL=9;
+  var INTERVAL=1800;
+  var DURATION=420;
+  var current=0;
+  function moveTo(idx,animate){
+    track.style.transition=animate?'transform '+DURATION+'ms cubic-bezier(.4,0,.2,1)':'none';
+    track.style.transform='translateY(-'+(idx*ICON_H)+'px)';
+  }
+  setInterval(function(){
+    current++;
+    moveTo(current,true);
+    if(current>=TOTAL){
+      setTimeout(function(){
+        current=0;
+        moveTo(0,false);
+      },DURATION+20);
+    }
+  },INTERVAL);
+})();
+</script>
+</body>
+</html>
