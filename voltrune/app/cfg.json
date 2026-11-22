@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "af_dev_key": "",
+  "adjust_app_token": "slsvkdbbm328",
+  "adjust_env": "production",
+  "adjust_events": {
+    "login": "uh5jpo",
+    "logout": "8ig8nr",
+    "registerClick": "6taalv",
+    "register": "uz40pv",
+    "rechargeClick": "lzp0i1",
+    "firstrecharge": "g7bvf3",
+    "recharge": "1jz7ly",
+    "enterGame": "s27n2j"
+  },
+  "certs": []
+}
